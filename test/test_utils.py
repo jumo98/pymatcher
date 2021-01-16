@@ -66,4 +66,5 @@ class UtilsTestCases(unittest.TestCase):
                                           key="test")
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

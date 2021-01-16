@@ -1,6 +1,5 @@
 import unittest
 import numpy as np
-import os
 import logging
 
 import modules.data as data
@@ -8,15 +7,11 @@ import modules.utils as utils
 
 
 def get_ideal_path():
-    return os.path.join(os.path.dirname(__file__),
-                        "data",
-                        "ideal.csv")
+    return "./data/ideal.csv"
 
 
 def get_train_path():
-    return os.path.join(os.path.dirname(__file__),
-                        "data",
-                        "train.csv")
+    return "./data/train.csv"
 
 
 def _init_test_data_class():
@@ -77,4 +72,5 @@ class DataTestCases(unittest.TestCase):
             data_c._squared_error(y1, y2)
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

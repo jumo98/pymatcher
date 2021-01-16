@@ -62,4 +62,5 @@ class DatabaseTestCases(unittest.TestCase):
             db._read_table(name=name)
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()

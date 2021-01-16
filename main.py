@@ -32,33 +32,26 @@ def main():
     # Set constant paths to where data is stored
     # Information is retrieved from config file
     logger.info("Reading config file.")
-    DATA_DIR = utils.read_string_from_config(logger=logger,
-                                             cfg=cfg,
-                                             key="dataDir")
+    DATA_DIR = utils.read_string_from_config(
+        logger=logger, cfg=cfg, key="dataDir")
 
-    TRAIN_FILE = utils.read_string_from_config(logger=logger,
-                                               cfg=cfg,
-                                               key="trainFile")
+    TRAIN_FILE = utils.read_string_from_config(
+        logger=logger, cfg=cfg, key="trainFile")
 
-    IDEAL_FILE = utils.read_string_from_config(logger=logger,
-                                               cfg=cfg,
-                                               key="idealFile")
+    IDEAL_FILE = utils.read_string_from_config(
+        logger=logger, cfg=cfg, key="idealFile")
 
-    TEST_FILE = utils.read_string_from_config(logger=logger,
-                                              cfg=cfg,
-                                              key="testFile")
+    TEST_FILE = utils.read_string_from_config(
+        logger=logger, cfg=cfg, key="testFile")
 
-    TRAIN_PATH = os.path.join(os.path.dirname(__file__),
-                              DATA_DIR,
-                              TRAIN_FILE)
+    TRAIN_PATH = os.path.join(
+        os.path.dirname(__file__), DATA_DIR, TRAIN_FILE)
 
-    IDEAL_PATH = os.path.join(os.path.dirname(__file__),
-                              DATA_DIR,
-                              IDEAL_FILE)
+    IDEAL_PATH = os.path.join(
+        os.path.dirname(__file__), DATA_DIR, IDEAL_FILE)
 
-    TEST_PATH = os.path.join(os.path.dirname(__file__),
-                             DATA_DIR,
-                             TEST_FILE)
+    TEST_PATH = os.path.join(
+        os.path.dirname(__file__), DATA_DIR, TEST_FILE)
 
     # Create database instance
     database = db.Database(cfg=cfg)
@@ -85,17 +78,17 @@ def main():
     database.update_result_table(data=test_result)
 
     # Create plotter instance with results
-    Plotter = plot.Plotter(ideal_data=ideal_data,
+    plotter = plot.Plotter(ideal_data=ideal_data,
                            training_data=training_data,
                            training_result=training_result,
                            deviations=trainingData.deviations(),
                            test_result=test_result)
 
     # Plot results
-    Plotter.plot_results()
+    plotter.plot_results()
 
     # Show results
-    Plotter.show_results()
+    plotter.show_results()
 
     logger.info("Program has finished.")
 
