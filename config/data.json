@@ -1,0 +1,10 @@
+{
+    "dataDir": "data",
+    "trainFile": "train.csv",
+    "idealFile": "ideal.csv",
+    "testFile": "test.csv",
+    "dbName": "results",
+    "trainingDataTable": "trainingSets",
+    "idealFunctionsTable": "idealFunctions",
+    "resultsTable": "results"
+}
