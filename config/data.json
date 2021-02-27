@@ -1,8 +1,7 @@
 {
-    "dataDir": "data",
-    "trainFile": "train.csv",
-    "idealFile": "ideal.csv",
-    "testFile": "test.csv",
+    "trainFile": "data/train.csv",
+    "idealFile": "data/ideal.csv",
+    "testFile": "data/test.csv",
     "dbName": "results",
     "trainingDataTable": "trainingSets",
     "idealFunctionsTable": "idealFunctions",

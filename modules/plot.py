@@ -92,7 +92,7 @@ class Plotter():
         if training_function not in list(self._training_result):
             raise(KeyError(training_function))
 
-        return self._training_result[training_function]['ideal_function']
+        return self._training_result[training_function]['ideal_f']
 
     def _index(self):
         """
@@ -195,7 +195,7 @@ class Plotter():
             raise(KeyError(name))
 
         no = self._test_result['No. of ideal func']
-        res = self._training_result[name]['ideal_function']
+        res = self._training_result[name]['ideal_f']
 
         if operator == "==":
             return self._test_result.loc[no == res]

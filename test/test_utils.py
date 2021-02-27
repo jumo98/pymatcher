@@ -44,7 +44,7 @@ class UtilsTestCases(unittest.TestCase):
         cfg = utils.load_config(logger, "config/data.json")
         utils.read_string_from_config(logger=logger,
                                       cfg=cfg,
-                                      key="dataDir")
+                                      key="trainFile")
 
     def test_read_string_from_config_key_not_found(self):
         logger = logging.getLogger(__name__)

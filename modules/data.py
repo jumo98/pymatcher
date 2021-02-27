@@ -40,7 +40,7 @@ class Data():
     def iter_ideal(self):
         return self._ideal_functions.iteritems()
 
-    def _squared_error(self, training_data, ideal_data):
+    def squared_error(self, training_data, ideal_data):
         """
         Calculates Squared Errors for
         two ndarrays with one column or for two values.
@@ -108,6 +108,8 @@ class Data():
         pandas.DataFrame
             Single column DataFrame
         """
+        if name not in list(self._ideal_functions):
+            raise(KeyError(name))
         return self._ideal_functions[name]
 
 
@@ -179,7 +181,7 @@ class TrainingData(Data):
         deviations = pd.DataFrame(columns=function_columns)
 
         result_frames = []
-        frame_index = ("maximum_deviation", "ideal_function")
+        frame_index = ("max_se", "ideal_f")
 
         for _, training_set in self.iter_training():
             # Track time per loop
@@ -198,8 +200,8 @@ class TrainingData(Data):
                 # Convert to numpy array for faster calculation
                 ideal_data_np = ideal_function.to_numpy()
 
-                dev = self._squared_error(training_data=training_data_np,
-                                          ideal_data=ideal_data_np)
+                dev = self.squared_error(training_data=training_data_np,
+                                         ideal_data=ideal_data_np)
                 dev_sum = dev.sum()
 
                 # If first iteration or sum smaller
@@ -220,8 +222,8 @@ class TrainingData(Data):
 
             t1 = time.time()
             total = (t1-t0)/1000
-            self.logger.info(f"Ideal function for {training_set.name} " +
-                             f"is {min_name}. Found after {total}ms.")
+            self.logger.debug(f"Ideal function for {training_set.name} " +
+                              f"is {min_name}. Found after {total}ms.")
 
         # Save deviations for visualization
         self._deviations = deviations
@@ -242,19 +244,42 @@ class TestData(Data):
     Stores ideal functions and
     provides function for mapping test points to
     each found ideal function.
+
+    Parameters
+    ----------
+    ideal_data : pandas.DataFrame
+        Contains the ideal functions stored as a DataFrame.
+
+    result_data : pandas.DataFrame
+        Contains the results from finding ideal functions.
+
+    test_filepath : str
+        Contains the path to the test data file.
+
+    Returns
+    -------
+    None.
     """
-    def map_to_functions(self, result_data, test_filepath):
+    def __init__(self, ideal_data, result_data, test_filepath):
+        super().__init__(ideal_data=ideal_data)
+        if not isinstance(result_data, pd.DataFrame):
+            self.logger.error(
+                f"Wrong datatype of result_data: {type(result_data)}")
+            raise TypeError(type(result_data))
+
+        self._result_data = result_data
+
+        if not isinstance(test_filepath, str):
+            self.logger.error(
+                f"Wrong datatype of test_filepath: {type(test_filepath)}")
+            raise TypeError(type(test_filepath))
+
+        self.test_filepath = test_filepath
+
+    def map_to_functions(self):
         """
         Maps test points to previously identified
         ideal functions.
-
-        Parameters
-        ----------
-        result_data : pandas.DataFrame
-            Contains the results data stored as a DataFrame.
-
-        test_filepath : str
-            Path where test data is stored.
 
         Returns
         -------
@@ -268,7 +293,8 @@ class TestData(Data):
         result_df = pd.DataFrame(columns=result_columns)
 
         # Read test data line by line with chunksize set to 1
-        row_reader = pd.read_csv(filepath_or_buffer=test_filepath, chunksize=1)
+        row_reader = pd.read_csv(filepath_or_buffer=self.test_filepath,
+                                 chunksize=1)
 
         # Iterate row by row
         for row in row_reader:
@@ -279,17 +305,17 @@ class TestData(Data):
             # Set helper variable 'matched' to False
             # Indicates if test point has been matched at least once
             matched = False
-            for _, result_column in result_data.iteritems():
+            for _, result_column in self._result_data.iteritems():
                 # Extract ideal function name
-                ideal_f_name = result_column["ideal_function"]
+                ideal_f_name = result_column["ideal_f"]
 
                 # Extract maximum deviation of ideal function
-                f_max_deviation = result_column["maximum_deviation"]
+                f_max_deviation = result_column["max_se"]
                 f_values = self.ideal_column_by_name(ideal_f_name)
 
                 # Calculate deviation at position x
-                dev = self._squared_error(training_data=y,
-                                          ideal_data=f_values[x])
+                dev = self.squared_error(training_data=y,
+                                         ideal_data=f_values[x])
 
                 # Check mapping criterion for calculated deviation
                 if self._mapping_criterion(deviation=dev,
@@ -309,7 +335,8 @@ class TestData(Data):
 
         t1 = time.time()
         total = (t1-t0)/1000
-        self.logger.info(f"Mapping process done after {total}ms.")
+        self.logger.info("Mapping process...Done")
+        self.logger.debug(f"Mapping process took {total}ms.")
         return result_df
 
     def _mapping_criterion(self, deviation, max_deviation):

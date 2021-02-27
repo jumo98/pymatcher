@@ -55,7 +55,7 @@ class Database():
         connection_string = "sqlite:///" + DB_NAME + ".db"
         self.logger.info('Creating sqlite database engine...')
         try:
-            self.engine = sqlalchemy.create_engine(connection_string)
+            self._engine = sqlalchemy.create_engine(connection_string)
         except sqlalchemy.exc.SQLAlchemyError as err:
             self.logger.error(err)
             raise(err)
@@ -72,7 +72,7 @@ class Database():
         """
         self.logger.info('Connecting to db...')
         try:
-            conn = self.engine.connect()
+            conn = self._engine.connect()
         except sqlalchemy.exc.SQLAlchemyError as err:
             self.logger.error(err)
             raise(err)

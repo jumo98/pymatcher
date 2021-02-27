@@ -38,18 +38,17 @@ def read_data(logger, path):
 
 def load_config(logger, path):
     """
-    Reads data from csv file and converts
-    it to a pandas.DataFrame.
+    Reads config data from a json file.
 
     Parameters
     ----------
     path : str
-        Path where csv file is stored.
+        Path where config is stored.
 
     Returns
     -------
-    pandas.DataFrame
-        Data from CSV file as table.
+    config : dict
+        Contains configuration entries.
     """
     try:
         with open(path) as config_file:

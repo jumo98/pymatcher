@@ -17,12 +17,16 @@ import modules.utils as utils
 
 def main():
     # Set maximal threads to eight to avoid computation problems
-    os.environ['NUMEXPR_MAX_THREADS'] = '8'
+    os.environ['NUMEXPR_MAX_THREADS'] = "8"
 
-    # Load logger configuration
-    logging.config.fileConfig(fname='config/logger.conf')
+    # Configure logger
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(name)s - ' +
+                               '%(levelname)s - %(message)s',
+                        filename='applog.log',
+                        filemode='w')
 
-    # Get the logger specified in the file
+    # Get logger with name of module
     logger = logging.getLogger(__name__)
     logger.info("Starting program.")
 
@@ -31,9 +35,7 @@ def main():
 
     # Set constant paths to where data is stored
     # Information is retrieved from config file
-    logger.info("Reading config file.")
-    DATA_DIR = utils.read_string_from_config(
-        logger=logger, cfg=cfg, key="dataDir")
+    logger.info("Reading config file...")
 
     TRAIN_FILE = utils.read_string_from_config(
         logger=logger, cfg=cfg, key="trainFile")
@@ -45,13 +47,15 @@ def main():
         logger=logger, cfg=cfg, key="testFile")
 
     TRAIN_PATH = os.path.join(
-        os.path.dirname(__file__), DATA_DIR, TRAIN_FILE)
+        os.path.dirname(__file__), TRAIN_FILE)
 
     IDEAL_PATH = os.path.join(
-        os.path.dirname(__file__), DATA_DIR, IDEAL_FILE)
+        os.path.dirname(__file__), IDEAL_FILE)
 
     TEST_PATH = os.path.join(
-        os.path.dirname(__file__), DATA_DIR, TEST_FILE)
+        os.path.dirname(__file__), TEST_FILE)
+
+    logger.info("Reading config file...Done")
 
     # Create database instance
     database = db.Database(cfg=cfg)
@@ -70,9 +74,10 @@ def main():
     training_result = trainingData.find_ideal_functions()
 
     # Initiate mapping process
-    testData = data.TestData(ideal_data=ideal_data)
-    test_result = testData.map_to_functions(result_data=training_result,
-                                            test_filepath=TEST_PATH)
+    testData = data.TestData(ideal_data=ideal_data,
+                             result_data=training_result,
+                             test_filepath=TEST_PATH)
+    test_result = testData.map_to_functions()
 
     # Save mapping results in db
     database.update_result_table(data=test_result)
