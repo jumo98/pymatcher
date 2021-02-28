@@ -301,7 +301,7 @@ class Plotter():
         # Create figure with title
         ideal_function = self._found_ideal(training_function=training_function)
         title = f"""Training set {training_function} with
-ideal function {ideal_function} and deviation"""
+ideal function {ideal_function}"""
 
         ideal_f_values = self._ideal_function_by_name(ideal_function)
         y_range = (ideal_f_values.min()*1.5, ideal_f_values.max()*1.5)
@@ -320,12 +320,6 @@ ideal function {ideal_function} and deviation"""
                   y=ideal_f_values,
                   line_width=2,
                   legend_label="ideal")
-
-        # Plot deviation
-        # plot.vbar(x=self._index(),
-        #          top=self._deviation_by_name(training_function),
-        #          color="black",
-        #          legend_label="deviation")
 
         # Add legend
         plot.legend.location = "bottom_left"
@@ -453,4 +447,5 @@ ideal function {ideal_function} and deviation"""
         Also saves this page in program directory.
         """
         grid_plot = bokeh.layouts.gridplot(self.grid)
+        bokeh.plotting.save(grid_plot, filename="results.html")
         bokeh.plotting.show(grid_plot)
